@@ -18,25 +18,42 @@ Full working example can be seen here:
 Main entity A includes two value objects B and C:
 [source,java]
 ----
-include::src/main/java/test/A.java[]
+@Document(collection = "ROOT_ENTITY")
+public class A {
+
+    @Id
+    public String id;
+
+    /*
+     * Workaround to fix the issue: just swap this.b and this.c here in this class :)
+     */
+    public B b;
+
+    public C c;
+
+}
 ----
 
-B also includes C (it is crucial that C is included both in A and B):
+Class B is not highly interesting, the only note is it must include
+   some fields not of simple types, for example D
+   (the contents of D doesn't matter):
 [source,java]
 ----
-include::src/main/java/test/B.java[]
+public class B {
+
+    public D d;
+
+}
 ----
 
-Class C is not highly interesting, the only note is it must include
- some fields not of simple types, for example D (see the explanation below):
+Class C also includes B (it is crucial that B is included both in A and C):
 [source,java]
 ----
-include::src/main/java/test/C.java[]
-----
+public class C implements Serializable {
 
-[source,java]
-----
-include::src/main/java/test/D.java[]
+    public B b;
+
+}
 ----
 
 When the application with such a class structure boots, it gives a false warning:
